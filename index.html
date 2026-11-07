@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Folix PDF Viewer</title><meta name="theme-color" content="#ff6a00">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png"><link rel="apple-touch-icon" href="assets/apple-touch-icon.png"><link rel="manifest" href="site.webmanifest"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Folix">
+
+<link rel="stylesheet" href="styles.css"></head>
+<body class="app">
+<div id="chrome">
+<div class="ticker" aria-hidden="true"><div class="tk"><span>FOLIX ★ PDF VIEWER ★ A FLOPPERSBLOP PRODUCT ★ PRIVATE ★ NO UPLOADS ★ FAST ★ FREE ★</span><span>FOLIX ★ PDF VIEWER ★ A FLOPPERSBLOP PRODUCT ★ PRIVATE ★ NO UPLOADS ★ FAST ★ FREE ★</span><span>FOLIX ★ PDF VIEWER ★ A FLOPPERSBLOP PRODUCT ★ PRIVATE ★ NO UPLOADS ★ FAST ★ FREE ★</span><span>FOLIX ★ PDF VIEWER ★ A FLOPPERSBLOP PRODUCT ★ PRIVATE ★ NO UPLOADS ★ FAST ★ FREE ★</span><span>FOLIX ★ PDF VIEWER ★ A FLOPPERSBLOP PRODUCT ★ PRIVATE ★ NO UPLOADS ★ FAST ★ FREE ★</span><span>FOLIX ★ PDF VIEWER ★ A FLOPPERSBLOP PRODUCT ★ PRIVATE ★ NO UPLOADS ★ FAST ★ FREE ★</span></div></div>
+<header class="top"><a class="brand" href="index.html"><img src="assets/icon-192.png" alt=""><b>Folix</b></a>
+<button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><img src="assets/icons/menu.svg" alt=""></button>
+<nav id="nav" aria-label="Main"><a href="index.html">Viewer</a><a href="about.html">About</a><a href="faq.html">FAQ</a><a href="contact.html">Contact</a></nav></header>
+<div class="bar" role="toolbar" aria-label="PDF controls">
+<div class="mini"><button id="mbtn" aria-label="Site menu" aria-expanded="false"><img src="assets/icon-192.png" alt=""></button></div>
+<label class="btn pri" for="file" tabindex="0" id="openl"><img src="assets/icons/open.svg" alt=""><span>OPEN</span></label>
+<input id="file" type="file" accept="application/pdf,.pdf" class="hide">
+<button id="sb" aria-label="Pages and outline sidebar" aria-pressed="false" disabled><img src="assets/icons/sidebar.svg" alt=""></button>
+<div class="grp" id="g-nav"><button id="prev" aria-label="Previous page" disabled><img src="assets/icons/prev.svg" alt=""></button><input id="pg" type="number" min="1" value="1" aria-label="Page number" disabled><span id="tot">/ –</span><button id="next" aria-label="Next page" disabled><img src="assets/icons/next.svg" alt=""></button></div>
+<div class="grp" id="g-zoom"><button id="zo" aria-label="Zoom out" disabled><img src="assets/icons/zoom-out.svg" alt=""></button><span id="zl">100%</span><button id="zi" aria-label="Zoom in" disabled><img src="assets/icons/zoom-in.svg" alt=""></button><button id="fit" aria-label="Fit width" disabled><img src="assets/icons/fit-width.svg" alt=""></button><button id="fith" aria-label="Fit height" disabled><img src="assets/icons/fit-height.svg" alt=""></button></div>
+<div class="grp" id="g-view"><button id="rot" aria-label="Rotate page" disabled><img src="assets/icons/rotate.svg" alt=""></button><button id="spotb" aria-label="Spotlight reading mode" aria-pressed="false" disabled><img src="assets/icons/spotlight.svg" alt=""></button><button id="two" aria-label="Two-page view" aria-pressed="false" disabled><img src="assets/icons/two-page.svg" alt=""></button><button id="dark" aria-label="Dark reading mode"><img src="assets/icons/contrast.svg" alt=""></button><button id="fs" aria-label="Fullscreen"><img src="assets/icons/fullscreen.svg" alt=""></button></div>
+<button id="ann" aria-label="Annotate" aria-pressed="false" disabled><img src="assets/icons/pen.svg" alt=""><span>NOTES</span></button>
+<div class="grp" id="g-search"><img width="22" height="22" src="assets/icons/search.svg" alt=""><input id="q" type="search" placeholder="SEARCH" aria-label="Search text" disabled><span id="cnt"></span></div>
+<button id="dl" aria-label="Download" disabled><img src="assets/icons/download.svg" alt=""></button><button id="pr" aria-label="Print" disabled><img src="assets/icons/print.svg" alt=""></button>
+<button id="pin" class="on" aria-pressed="true" aria-label="Toggle top bar: pinned or auto-hide"><img src="assets/icons/pin.svg" alt=""><span id="pinl">PINNED</span></button>
+<button id="moreb" class="hide" aria-label="More tools" aria-expanded="false"><img src="assets/icons/more.svg" alt=""><span>MORE</span></button>
+</div>
+<div class="abar hide" id="abar" role="toolbar" aria-label="Annotation tools">
+<div class="grp"><button data-tool="pen" aria-pressed="false" aria-label="Pen"><img src="assets/icons/pen.svg" alt=""><span>Pen</span></button><button data-tool="mk" aria-pressed="false" aria-label="Marker"><img src="assets/icons/marker.svg" alt=""><span>Marker</span></button><button data-tool="hl" aria-pressed="false" aria-label="Highlight"><img src="assets/icons/highlight.svg" alt=""><span>Highlight</span></button><button data-tool="tx" aria-pressed="false" aria-label="Text"><img src="assets/icons/textbox.svg" alt=""><span>Text</span></button><button data-tool="note" aria-pressed="false" aria-label="Note"><img src="assets/icons/note.svg" alt=""><span>Note</span></button><button data-tool="sig" aria-pressed="false" aria-label="Sign"><img src="assets/icons/signature.svg" alt=""><span>Sign</span></button><button data-tool="er" aria-pressed="false" aria-label="Eraser"><img src="assets/icons/eraser.svg" alt=""><span>Eraser</span></button></div>
+<div class="grp" id="sws"><button class="sw" data-c="#0a0a0a" style="background:#0a0a0a" aria-label="Colour black"></button><button class="sw" data-c="#ff3b30" style="background:#ff3b30" aria-label="Colour red"></button><button class="sw" data-c="#ff6a00" style="background:#ff6a00" aria-label="Colour orange"></button><button class="sw" data-c="#ffd60a" style="background:#ffd60a" aria-label="Colour yellow"></button><button class="sw" data-c="#2bd96b" style="background:#2bd96b" aria-label="Colour green"></button><button class="sw" data-c="#1e90ff" style="background:#1e90ff" aria-label="Colour blue"></button></div>
+<div class="grp" id="wds"><button data-w="2" aria-label="Thin">S</button><button data-w="4" aria-label="Medium">M</button><button data-w="8" aria-label="Thick">L</button></div>
+<div class="grp"><button id="undo" aria-label="Undo" disabled><img src="assets/icons/undo.svg" alt=""></button><button id="redo" aria-label="Redo" disabled><img src="assets/icons/redo.svg" alt=""></button></div>
+<button id="asave" aria-label="Save annotated PDF"><img src="assets/icons/download.svg" alt=""><span>SAVE PDF</span></button>
+</div>
+</div>
+<div class="work" id="work">
+<aside id="side" data-tab="pages" aria-label="Pages and outline"><div class="tabs"><button id="tabp" class="on">Pages</button><button id="tabo">Outline</button></div><div id="thumbs" class="panel"></div><div id="outline" class="panel"></div></aside>
+<main id="main"><div id="pages"></div>
+<div id="empty">
+<section class="hero"><img class="lockup" src="assets/folix-lockup.png" alt="Folix PDF Viewer">
+<div class="copy"><h1>Drop a <em>PDF.</em> Read it.</h1><p>Private, fast, no uploads. Your file never leaves your browser.</p><label class="btn pri" for="file" tabindex="-1"><img src="assets/icons/open.svg" alt=""><span>Open a PDF</span></label> <button id="install" class="btn hide" type="button"><img src="assets/icons/download.svg" alt=""><span>Install app</span></button>
+<button id="hkb2" class="lnk" type="button">Keyboard shortcuts (?)</button></div>
+<div class="pill"><img src="assets/floppersblop-product.png" alt="FloppersBlop Product"></div></section>
+<footer><nav class="nav" aria-label="Site"><a href="index.html">Viewer</a><a href="about.html">About</a><a href="faq.html">FAQ</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="disclaimer.html">Disclaimer</a><a href="copyright.html">Copyright</a><button type="button" id="hkb">Shortcuts</button><button type="button" id="kz"></button></nav><div>&copy; <span data-cfg="year"></span> <span data-cfg="owner"></span> &middot; v<span data-cfg="version"></span></div></footer></div></main>
+<div id="spot" class="hide" aria-hidden="true"><i></i></div>
+</div>
+<button id="reveal" class="hide" aria-label="Show top bar">&#9660; BAR</button>
+<dialog id="pw" aria-labelledby="pwt"><form id="pwf"><h2 id="pwt">Locked PDF</h2><p id="pwmsg"></p><input id="pwi" type="password" autocomplete="off" aria-label="PDF password" placeholder="PASSWORD"><div class="row"><button type="submit" class="pri" id="pwok">Unlock</button><button type="button" id="pwx">Cancel</button></div></form></dialog>
+<dialog id="ntd" aria-labelledby="ntt"><form id="ntf"><h2 id="ntt">Add note</h2><textarea id="nti" rows="4" maxlength="500" aria-label="Note text" placeholder="TYPE YOUR NOTE"></textarea><div class="row"><button type="submit" class="pri">Add</button><button type="button" id="ntc">Cancel</button></div></form></dialog>
+<dialog id="hk" aria-labelledby="hkt"><h2 id="hkt">Keyboard shortcuts</h2><table class="keys"><tr><td><kbd>← →</kbd></td><td>Previous / next page</td></tr><tr><td><kbd>Home / End</kbd></td><td>First / last page</td></tr><tr><td><kbd>Ctrl + F</kbd></td><td>Search</td></tr><tr><td><kbd>Ctrl + / Ctrl −</kbd></td><td>Zoom in / out</td></tr><tr><td><kbd>W</kbd></td><td>Fit width</td></tr><tr><td><kbd>H</kbd></td><td>Fit height</td></tr><tr><td><kbd>R</kbd></td><td>Rotate</td></tr><tr><td><kbd>T</kbd></td><td>Change theme</td></tr><tr><td><kbd>2</kbd></td><td>Two-page view</td></tr><tr><td><kbd>S</kbd></td><td>Pages sidebar</td></tr><tr><td><kbd>A</kbd></td><td>Annotation tools</td></tr><tr><td><kbd>Ctrl + Z / Y</kbd></td><td>Undo / redo</td></tr><tr><td><kbd>Esc</kbd></td><td>Close menu or tool</td></tr><tr><td><kbd>L</kbd></td><td>Spotlight night reading</td></tr><tr><td><kbd>[</kbd> <kbd>]</kbd></td><td>Spotlight smaller / larger</td></tr><tr><td><kbd>?</kbd></td><td>This help</td></tr></table><div class="row"><button type="button" id="hkx" class="pri">Close</button></div></dialog>
+<dialog id="sgd" aria-labelledby="sgt"><form id="sgf"><h2 id="sgt">Signature</h2>
+<div id="sgsaved" class="hide"><p>Saved signature</p><img id="sgimg" alt="Saved signature"><button type="button" id="sguse" class="pri">Use saved</button><p class="or">OR CREATE A NEW ONE</p></div>
+<div class="tabs2"><button type="button" id="sgtd" class="on">Draw</button><button type="button" id="sgtt">Type</button></div>
+<div id="sgdraw"><canvas id="sgc" width="560" height="200" aria-label="Draw your signature here"></canvas><button type="button" id="sgclr">Clear</button></div>
+<div id="sgtype" class="hide"><input id="sgi" type="text" maxlength="40" placeholder="TYPE YOUR NAME" aria-label="Signature text"><div id="sgprev"></div></div>
+<p id="sgerr" class="err" role="alert"></p>
+<div class="row"><button type="submit" class="pri">Place signature</button><button type="button" id="sgx">Cancel</button></div></form></dialog>
+<div id="more" class="pop" aria-label="More tools"></div>
+<nav id="mnav" class="pop" aria-label="Site"><a href="index.html">Viewer</a><a href="about.html">About</a><a href="faq.html">FAQ</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="disclaimer.html">Disclaimer</a><a href="copyright.html">Copyright</a></nav>
+<div id="spctl" class="hide" role="group" aria-label="Spotlight controls"><button id="spm" type="button" aria-label="Smaller spotlight">&minus;</button><span>SPOTLIGHT</span><button id="spp" type="button" aria-label="Larger spotlight">+</button><button id="spx" type="button" aria-label="Turn spotlight off">OFF</button></div>
+<div id="msg" role="status"></div>
+<script src="lib/pdf.min.js"></script>
+<script src="config.js"></script><script src="app.js"></script></body></html>
