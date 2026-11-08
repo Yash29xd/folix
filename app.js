@@ -510,12 +510,13 @@ function spDraw(){spRaf=0;sdot.style.transform='translate3d('+(spx-spR)+'px,'+(s
 function spSize(n){spR=Math.min(420,Math.max(80,n));spot.style.setProperty('--sr',spR+'px');try{localStorage.setItem('folix.spotr',spR)}catch(e){}spDraw()}
 function spMove(cx,cy){const r=spot.getBoundingClientRect();spx=cx-r.left;spy=cy-r.top;if(!spRaf)spRaf=requestAnimationFrame(spDraw)}
 function setSpot(o,save){
-  spOn=o;main.dataset.spot=o?'1':'';spot.classList.toggle('hide',!o);spctl.classList.toggle('hide',!o);
+  spOn=o;main.dataset.spot=o?'1':'';document.body.dataset.spot=o?'1':'';spot.classList.toggle('hide',!o);spctl.classList.toggle('hide',!o);
   $('spotb').classList.toggle('on',o);$('spotb').setAttribute('aria-pressed',o);
   if(save)try{localStorage.setItem('folix.spot',o?'1':'0')}catch(e){}
   if(o){const r=spot.getBoundingClientRect();if(!spx&&!spy){spx=r.width/2;spy=r.height/3}spot.style.setProperty('--sr',spR+'px');spDraw();if(save)msg('Spotlight on. Move your mouse or finger to read')}
 }
 function initSpot(){let v=false;try{v=localStorage.getItem('folix.spot')==='1'}catch(e){}setSpot(v,false)}
+let awT;[$('chrome'),$('side')].forEach(el=>el.addEventListener('pointerdown',()=>{if(!spOn)return;el.classList.add('awake');clearTimeout(awT);awT=setTimeout(()=>el.classList.remove('awake'),3000)}));
 $('spotb').onclick=()=>setSpot(!spOn,true);$('spx').onclick=()=>setSpot(false,true);
 $('spm').onclick=()=>spSize(spR-30);$('spp').onclick=()=>spSize(spR+30);
 addEventListener('pointermove',e=>{if(spOn&&e.pointerType!=='touch')spMove(e.clientX,e.clientY)},{passive:true});
@@ -528,9 +529,11 @@ const overflows=()=>bar.scrollWidth>bar.clientWidth+1;
 function closePops(){[moreP,mnav].forEach(p=>p.classList.remove('open'));moreB.setAttribute('aria-expanded','false');mbtn.setAttribute('aria-expanded','false')}
 function popAt(p,anchor,right){
   const open=!p.classList.contains('open');closePops();if(!open)return;
-  const r=anchor.getBoundingClientRect();p.style.top=(r.bottom+6)+'px';
-  if(right){p.style.left='auto';p.style.right=Math.max(8,innerWidth-r.right)+'px'}else{p.style.right='auto';p.style.left=Math.max(8,r.left)+'px'}
+  const r=anchor.getBoundingClientRect(),vw=document.documentElement.clientWidth;
+  p.style.top=(r.bottom+6)+'px';p.style.left='8px';p.style.right='auto';
   p.classList.add('open');anchor.setAttribute('aria-expanded','true');
+  if(vw<=520&&p===moreP){p.style.right='8px'}      // phones: full-width sheet under the bar
+  else{const w=p.offsetWidth;p.style.left=Math.max(8,Math.min(right?r.right-w:r.left,vw-w-8))+'px'}
 }
 function fitBar(){
   moved.forEach(m=>{m.ph.parentNode.insertBefore(m.el,m.ph);m.ph.remove()});moved=[];

@@ -241,3 +241,24 @@ main[data-tl=er] .tx,main[data-tl=er] .sg{outline:3px dashed var(--ink);cursor:p
 #spotb.on{background:var(--l)}
 main[data-spot="1"][data-theme=light] .page{background:#ebdcb8}
 main[data-spot="1"][data-theme=light] .page canvas{filter:sepia(.55) brightness(.92)}
+/* spotlight: dim the toolbar and sidebar; they light up on hover or focus */
+#chrome,#side{transition:filter .25s ease}
+body[data-spot="1"] #chrome,body[data-spot="1"] #side{filter:brightness(.28) saturate(.6)}
+body[data-spot="1"] #chrome:hover,body[data-spot="1"] #chrome:has(:focus-visible),body[data-spot="1"] #side:hover,body[data-spot="1"] #side:has(:focus-visible),body[data-spot="1"] .awake{filter:none}
+/* phones: compact bar so page navigation stays visible; MORE sits at the far right */
+#moreb{margin-left:auto}
+.pop{max-height:calc(100vh - 90px);max-height:calc(100dvh - 90px);overflow:auto}
+@media(max-width:520px){
+ .bar{gap:5px;padding:5px 6px}
+ .bar>button,.bar>.btn{min-width:34px;height:34px;padding:0 6px}
+ .bar #openl{padding:0 6px}
+ .mini button{width:34px;height:34px}
+ .mini button img{width:24px;height:24px}
+ .bar .grp{padding:2px;gap:2px}
+ .bar .grp button{min-width:28px;height:28px;padding:0 3px}
+ .bar #pg{width:40px;height:28px}
+ .bar #tot{min-width:0;font-size:12px}
+ .bar #zl{min-width:34px;font-size:12px}
+ .bar .grp>img{display:none}
+ #more{max-width:none}
+}
