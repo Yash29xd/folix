@@ -1,5 +1,5 @@
 /* Folix service worker: offline app shell + PDF share target. */
-const CACHE='folix-83b3455f',SHARE='folix-share';
+const CACHE='folix-bac510bd',SHARE='folix-share';
 const ASSETS=[
  "./",
  "./about.html",
@@ -8,6 +8,7 @@ const ASSETS=[
  "./assets/branding.png",
  "./assets/favicon-32.png",
  "./assets/floppersblop-product.png",
+ "./assets/folix-lockup-dark.png",
  "./assets/folix-lockup.png",
  "./assets/fonts/archivo-black-latin-400-normal.woff2",
  "./assets/fonts/dancing-script-latin-600-normal.woff2",
@@ -38,6 +39,7 @@ const ASSETS=[
  "./assets/icons/redo.svg",
  "./assets/icons/rotate.svg",
  "./assets/icons/search.svg",
+ "./assets/icons/share.svg",
  "./assets/icons/sidebar.svg",
  "./assets/icons/signature.svg",
  "./assets/icons/spotlight.svg",

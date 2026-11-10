@@ -7,13 +7,27 @@ document.querySelectorAll('a[data-mail]').forEach(a=>a.href='mailto:'+C.email);
 const cp=$('copy');if(cp)cp.onclick=()=>{(navigator.clipboard?navigator.clipboard.writeText(C.email):Promise.reject()).then(()=>{cp.textContent='Copied!'},()=>{cp.textContent=C.email});setTimeout(()=>cp.textContent='Copy email',2000)};
 const burger=$('burger'),hdr=document.querySelector('.top');
 if(burger)burger.onclick=()=>{const o=hdr.classList.toggle('open');burger.setAttribute('aria-expanded',o);burger.firstElementChild.src='assets/icons/'+(o?'close':'menu')+'.svg'};
+// ---------- site-wide theme (light / sepia / dark) ----------
+const THEMES=['light','sepia','dark'],TCOL={light:'#ff6a00',sepia:'#d27a2c',dark:'#a9500f'};
+let th='light';
+try{const t=localStorage.getItem('folix.theme');th=THEMES.includes(t)?t:(localStorage.getItem('folix.dark')==='1'?'dark':'light')}catch(e){}
+const themeHooks=[];
+function applyTheme(){
+  document.documentElement.dataset.theme=th;
+  const mc=document.querySelector('meta[name=theme-color]');if(mc)mc.content=TCOL[th];
+  document.querySelectorAll('[data-theme-toggle]').forEach(b=>{b.title='Theme: '+th+' (click to change)';b.setAttribute('aria-label','Theme: '+th+'. Click to change');if(b.dataset.themeToggle==='text')b.textContent='Theme: '+th});
+  themeHooks.forEach(f=>f());
+}
+function nextTheme(){th=THEMES[(THEMES.indexOf(th)+1)%3];try{localStorage.setItem('folix.theme',th)}catch(e){}applyTheme();if(typeof msg==='function')msg('Theme: '+th)}
+document.querySelectorAll('[data-theme-toggle]').forEach(b=>b.addEventListener('click',nextTheme));
+applyTheme();
 if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 if(!$('pages'))return; // static pages stop here
 const lib=window.pdfjsLib;
 lib.GlobalWorkerOptions.workerSrc=C.workerSrc;
 const main=$('main'),pagesEl=$('pages'),empty=$('empty');
 let noHide=0,rot=0,fitMode='w';let pdf=null,bytes=null,name='document.pdf',scale=1,base=null,cur=1,io=null,hits=[],hi=-1,query='';
-const ctrls=['prev','next','pg','zo','zi','fit','fith','rot','two','spotb','sb','ann','q','dl','pr'];
+const ctrls=['prev','next','pg','zo','zi','fit','fith','rot','two','spotb','sb','ann','share','q','dl','pr'];
 const msg=t=>{const m=$('msg');m.textContent=t;m.style.display=t?'block':'none';if(t)setTimeout(()=>m.style.display='none',2500)};
 
 async function openData(data,fname){
@@ -368,14 +382,12 @@ document.addEventListener('keydown',e=>{
 // save a copy with annotations flattened in (pdf-lib loads only now)
 const hexRgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255);
 function wrapText(t,font,sz,mw){const out=[];t.split('\n').forEach(par=>{let line='';par.split(' ').forEach(w=>{const tt=line?line+' '+w:w;if(font.widthOfTextAtSize(tt,sz)>mw&&line){out.push(line);line=w}else line=tt});out.push(line)});return out}
-$('asave').onclick=async()=>{
-  if(!pdf)return;
-  if(!Object.values(ann).some(l=>l&&l.length))return msg('Nothing to save yet. Add an annotation first');
-  msg('Preparing PDF…');
+const hasAnn=()=>Object.values(ann).some(l=>l&&l.length);
+async function buildAnnotated(){
   try{
     if(!window.PDFLib)await new Promise((ok,no)=>{const s=document.createElement('script');s.src=C.pdfLibSrc;s.onload=ok;s.onerror=no;document.head.appendChild(s)});
     const {PDFDocument,rgb,StandardFonts,LineCapStyle}=window.PDFLib;
-    let doc;try{doc=await PDFDocument.load(bytes)}catch(e){return msg('Locked PDFs cannot be saved with annotations')}
+    let doc;try{doc=await PDFDocument.load(bytes)}catch(e){msg('Locked PDFs cannot include annotations');return null}
     const font=await doc.embedFont(StandardFonts.Helvetica),pgs=doc.getPages();
     for(const k of Object.keys(ann)){
       const list=ann[k];if(!list||!list.length||!pgs[+k])continue;
@@ -394,10 +406,26 @@ $('asave').onclick=async()=>{
         }
       }
     }
-    const out=await doc.save(),a=document.createElement('a');
-    a.href=URL.createObjectURL(new Blob([out],{type:'application/pdf'}));a.download=name.replace(/\.pdf$/i,'')+'-annotated.pdf';a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href),4000);msg('Saved a copy with your annotations');
-  }catch(e){console.error(e);msg('Could not save the annotated PDF')}
+    return await doc.save();
+  }catch(e){console.error(e);msg('Could not build the annotated PDF');return null}
+}
+function downloadBytes(data,fname){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/pdf'}));a.download=fname;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+const baseName=()=>name.replace(/\.pdf$/i,'');
+$('asave').onclick=async()=>{
+  if(!pdf)return;
+  if(!hasAnn())return msg('Nothing to save yet. Add an annotation first');
+  msg('Preparing PDF…');const out=await buildAnnotated();
+  if(out){downloadBytes(out,baseName()+'-annotated.pdf');msg('Saved a copy with your annotations')}
+};
+// share the PDF through the system share sheet (with your annotations if you added any)
+$('share').onclick=async()=>{
+  if(!pdf)return;
+  let data=bytes,fname=baseName()+'.pdf';
+  if(hasAnn()){msg('Preparing PDF with your annotations…');const out=await buildAnnotated();if(out){data=out;fname=baseName()+'-annotated.pdf'}}
+  const file=new File([data],fname,{type:'application/pdf'});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:fname})}catch(e){if(e&&e.name!=='AbortError')msg('Could not share this file')}
+  }else{downloadBytes(data,fname);msg('Sharing is not available in this browser, so the PDF was downloaded')}
 };
 // ---------- remember last page ----------
 let lastT;
@@ -423,10 +451,9 @@ main.addEventListener('touchend',e=>{
   else{tapT=now;tapX=t.clientX;tapY=t.clientY}
 },{passive:false});
 function dtZoom(cx,cy){
-  const r=main.getBoundingClientRect(),px=(cx-r.left+main.scrollLeft)/scale,py=(cy-r.top+main.scrollTop)/scale;
+  const r=main.getBoundingClientRect(),x=cx-r.left,y=cy-r.top,a=anchorAt(x,y);
   const fw=(main.clientWidth-24-(two?24:0))/(pp()*bw());
-  setScale(scale<fw*1.4?Math.min(fw*2.5,C.maxScale):fw);
-  main.scrollLeft=px*scale-(cx-r.left);main.scrollTop=py*scale-(cy-r.top);
+  setScale(scale<fw*1.4?Math.min(fw*2.5,C.maxScale):fw);scrollToAnchor(a,x,y);
 }
 // ---------- text boxes + signature ----------
 const txSize=()=>wid===2?12:wid===4?16:24;
@@ -523,7 +550,7 @@ addEventListener('pointermove',e=>{if(spOn&&e.pointerType!=='touch')spMove(e.cli
 ['touchstart','touchmove'].forEach(t=>addEventListener(t,e=>{if(spOn&&e.touches[0])spMove(e.touches[0].clientX,e.touches[0].clientY)},{passive:true}));
 // ---------- toolbar: fits any width; extra tools move into a MORE menu ----------
 const bar=document.querySelector('.bar'),moreB=$('moreb'),moreP=$('more'),mnav=$('mnav'),mbtn=$('mbtn');
-const ORDER=['pin','pr','dl','g-view','g-search','ann','g-zoom','sb','g-nav'];
+const ORDER=['pin','pr','dl','share','g-view','g-search','ann','g-zoom','sb','g-nav'];
 let moved=[];
 const overflows=()=>bar.scrollWidth>bar.clientWidth+1;
 function closePops(){[moreP,mnav].forEach(p=>p.classList.remove('open'));moreB.setAttribute('aria-expanded','false');mbtn.setAttribute('aria-expanded','false')}
@@ -581,10 +608,7 @@ $('fit').onclick=()=>fitWidth();
 $('fith').onclick=fitHeight;
 $('rot').onclick=()=>{rot=(rot+90)%360;setScale(scale,true)};
 // dark reading mode (inverts page colours), remembered
-const THEMES=['light','sepia','dark'];let th='light';
-try{const t=localStorage.getItem('folix.theme');th=THEMES.includes(t)?t:(localStorage.getItem('folix.dark')==='1'?'dark':'light')}catch(e){}
-const applyTheme=()=>{main.dataset.theme=th;$('dark').classList.toggle('on',th!=='light');$('dark').setAttribute('aria-label','Theme: '+th+' (click to change)');$('dark').title='Theme: '+th};
-const nextTheme=()=>{th=THEMES[(THEMES.indexOf(th)+1)%3];try{localStorage.setItem('folix.theme',th)}catch(e){}applyTheme();msg('Theme: '+th)};
+themeHooks.push(()=>{$('dark').classList.toggle('on',th!=='light');$('dark').setAttribute('aria-label','Theme: '+th+' (click to change)');$('dark').title='Theme: '+th});
 $('dark').onclick=nextTheme;applyTheme();
 // two-page view
 let two=false;try{two=localStorage.getItem('folix.two')==='1'}catch(e){}
@@ -613,16 +637,46 @@ document.addEventListener('keydown',e=>{
   else if(!typing&&e.key==='Home')go(1);
   else if(!typing&&e.key==='End')go(pdf.numPages);
 });
-// pinch zoom on touch
-let pd=0;
-main.addEventListener('touchstart',e=>{if(e.touches.length===2)pd=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY)},{passive:true});
-main.addEventListener('touchend',e=>{if(pd&&e.touches.length<2){pd=0}},{passive:true});
-main.addEventListener('touchmove',e=>{
-  if(e.touches.length!==2||!pd||!pdf)return;
-  const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-  if(Math.abs(d/pd-1)>.25){setScale(scale*(d>pd?1.25:.8));pd=d}
+// pinch zoom: pages scale smoothly under your fingers, then re-render sharp when you let go
+function anchorAt(cx,cy){
+  const px=main.scrollLeft+cx,py=main.scrollTop+cy,ch=pagesEl.children;let best=0,bd=1e9;
+  for(let i=0;i<ch.length;i++){const e=ch[i],dy=py<e.offsetTop?e.offsetTop-py:py>e.offsetTop+e.offsetHeight?py-e.offsetTop-e.offsetHeight:0;if(dy<bd){bd=dy;best=i;if(!dy)break}}
+  const e=ch[best];return e?{i:best,rx:(px-e.offsetLeft)/e.offsetWidth,ry:(py-e.offsetTop)/e.offsetHeight}:null;
+}
+function scrollToAnchor(a,cx,cy){
+  const e=a&&pagesEl.children[a.i];if(!e)return;
+  main.scrollLeft=e.offsetLeft+a.rx*e.offsetWidth-cx;main.scrollTop=e.offsetTop+a.ry*e.offsetHeight-cy;
+}
+let pz=null;
+const tdist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+const tmid=(t,r)=>[(t[0].clientX+t[1].clientX)/2-r.left,(t[0].clientY+t[1].clientY)/2-r.top];
+main.addEventListener('touchstart',e=>{
+  if(!pdf||e.touches.length!==2)return;
+  const r=main.getBoundingClientRect(),pr=pagesEl.getBoundingClientRect(),c=tmid(e.touches,r);
+  pz={d0:tdist(e.touches),s0:scale,k:1,cx:c[0],cy:c[1],a:anchorAt(c[0],c[1])};
+  pagesEl.style.transformOrigin=(c[0]+r.left-pr.left)+'px '+(c[1]+r.top-pr.top)+'px';
 },{passive:true});
-// ?file=<url> (needs CORS)
+main.addEventListener('touchmove',e=>{
+  if(!pz||e.touches.length!==2)return;
+  const r=main.getBoundingClientRect(),c=tmid(e.touches,r);
+  pz.k=Math.min(C.maxScale/pz.s0,Math.max(C.minScale/pz.s0,tdist(e.touches)/pz.d0));pz.cx=c[0];pz.cy=c[1];
+  pagesEl.style.transform='scale('+pz.k+')';
+},{passive:true});
+const pzEnd=e=>{
+  if(!pz||e.touches.length>=2)return;const z=pz;pz=null;
+  pagesEl.style.transform='';pagesEl.style.transformOrigin='';
+  const ns=Math.min(C.maxScale,Math.max(C.minScale,z.s0*z.k));if(Math.abs(ns-z.s0)<.005)return;
+  setScale(ns);scrollToAnchor(z.a,z.cx,z.cy);
+};
+main.addEventListener('touchend',pzEnd,{passive:true});main.addEventListener('touchcancel',pzEnd,{passive:true});
+// trackpad pinch / Ctrl + wheel on desktop
+let wz=1,wRaf=0,wA=null,wC=[0,0];
+main.addEventListener('wheel',e=>{
+  if(!e.ctrlKey||!pdf)return;e.preventDefault();
+  const r=main.getBoundingClientRect();wC=[e.clientX-r.left,e.clientY-r.top];if(!wA)wA=anchorAt(wC[0],wC[1]);
+  wz*=Math.exp(-e.deltaY*.01);
+  if(!wRaf)wRaf=requestAnimationFrame(()=>{wRaf=0;const ns=Math.min(C.maxScale,Math.max(C.minScale,scale*wz));wz=1;const a=wA;wA=null;if(Math.abs(ns-scale)>.002){setScale(ns);scrollToAnchor(a,wC[0],wC[1])}});
+},{passive:false});
 // installed-app integration: open-with (file handler), share target, install button
 if('launchQueue' in window)launchQueue.setConsumer(async p=>{if(!p.files||!p.files.length)return;try{readFile(await p.files[0].getFile())}catch(e){msg('Could not open that file')}});
 if(/[?&]shared=1/.test(location.search)&&window.caches)caches.open('folix-share').then(async c=>{
