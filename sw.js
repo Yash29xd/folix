@@ -1,5 +1,5 @@
 /* Folix service worker: offline app shell + PDF share target. */
-const CACHE='folix-bac510bd',SHARE='folix-share';
+const CACHE='folix-20261110a',SHARE='folix-share';
 const ASSETS=[
  "./",
  "./about.html",

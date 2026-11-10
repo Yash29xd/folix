@@ -27,6 +27,7 @@ const lib=window.pdfjsLib;
 lib.GlobalWorkerOptions.workerSrc=C.workerSrc;
 const main=$('main'),pagesEl=$('pages'),empty=$('empty');
 let noHide=0,rot=0,fitMode='w';let pdf=null,bytes=null,name='document.pdf',scale=1,base=null,cur=1,io=null,hits=[],hi=-1,query='';
+const renderQueue=[];let activeRenders=0;
 const ctrls=['prev','next','pg','zo','zi','fit','fith','rot','two','spotb','sb','ann','share','q','dl','pr'];
 const msg=t=>{const m=$('msg');m.textContent=t;m.style.display=t?'block':'none';if(t)setTimeout(()=>m.style.display='none',2500)};
 
@@ -54,7 +55,7 @@ async function openData(data,fname){
 function build(){
   if(io)io.disconnect();
   pagesEl.innerHTML='';
-  io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?render(e.target):drop(e.target)),{root:main,rootMargin:'1200px 0px'});
+  io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?render(e.target):drop(e.target)),{root:main,rootMargin:'650px 0px'});
   for(let i=1;i<=pdf.numPages;i++){
     const d=document.createElement('div');d.className='page';d.dataset.n=i;size(d);pagesEl.appendChild(d);io.observe(d);
   }
@@ -62,8 +63,18 @@ function build(){
 }
 const bw=()=>rot%180?base.height:base.width,bh=()=>rot%180?base.width:base.height;
 function size(d){d.style.width=bw()*scale+'px';d.style.height=bh()*scale+'px'}
-async function render(d){
-  if(d._busy||d._done)return;d._busy=true;d._drop=false;
+function render(d){
+  if(d._busy||d._done)return;d._busy=true;d._drop=false;renderQueue.push(d);pumpRenders();
+}
+function pumpRenders(){
+  while(activeRenders<2&&renderQueue.length){
+    const d=renderQueue.shift();
+    if(d._drop||!d.isConnected||!pdf){d._busy=false;continue}
+    activeRenders++;
+    renderPage(d).finally(()=>{activeRenders--;d._busy=false;if(d._drop)drop(d);pumpRenders()});
+  }
+}
+async function renderPage(d){
   const myPdf=pdf;
   try{
     const page=await myPdf.getPage(+d.dataset.n);
@@ -81,8 +92,6 @@ async function render(d){
     await lib.renderTextLayer({textContentSource:tc,container:tl,viewport:vp,textDivs:[]}).promise;
     annAttach(d,vp);d._done=true;mark(d);
   }catch(e){if(e&&e.name!=='RenderingCancelledException')console.error(e)}
-  d._busy=false;
-  if(d._drop)drop(d);
 }
 function drop(d){
   if(d._busy){d._drop=true;return}
