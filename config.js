@@ -10,5 +10,5 @@ window.FOLIX_CONFIG={
   pdfLibSrc:'lib/pdf-lib.min.js', // loaded only when you save an annotated PDF
   minScale:0.25,
   maxScale:5,
-  maxDpr:1.5
+  maxDpr:2
 };

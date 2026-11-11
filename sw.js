@@ -1,5 +1,5 @@
 /* Folix service worker: offline app shell + PDF share target. */
-const CACHE='folix-20261110a',SHARE='folix-share';
+const CACHE='folix-74b8cab4',SHARE='folix-share';
 const ASSETS=[
  "./",
  "./about.html",
@@ -7,6 +7,12 @@ const ASSETS=[
  "./assets/apple-touch-icon.png",
  "./assets/branding.png",
  "./assets/favicon-32.png",
+ "./assets/filetype-128.png",
+ "./assets/filetype-256.png",
+ "./assets/filetype-32.png",
+ "./assets/filetype-48.png",
+ "./assets/filetype-64.png",
+ "./assets/floppersblop-product-dark.png",
  "./assets/floppersblop-product.png",
  "./assets/folix-lockup-dark.png",
  "./assets/folix-lockup.png",
