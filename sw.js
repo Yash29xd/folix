@@ -1,5 +1,5 @@
 /* Folix service worker: offline app shell + PDF share target. */
-const CACHE='folix-74b8cab4',SHARE='folix-share';
+const CACHE='folix-10bed2b9',SHARE='folix-share';
 const ASSETS=[
  "./",
  "./about.html",
@@ -32,12 +32,14 @@ const ASSETS=[
  "./assets/icons/fit-width.svg",
  "./assets/icons/fullscreen.svg",
  "./assets/icons/highlight.svg",
+ "./assets/icons/image.svg",
  "./assets/icons/marker.svg",
  "./assets/icons/menu.svg",
  "./assets/icons/more.svg",
  "./assets/icons/next.svg",
  "./assets/icons/note.svg",
  "./assets/icons/open.svg",
+ "./assets/icons/pages-edit.svg",
  "./assets/icons/pen.svg",
  "./assets/icons/pin.svg",
  "./assets/icons/prev.svg",
@@ -48,8 +50,10 @@ const ASSETS=[
  "./assets/icons/share.svg",
  "./assets/icons/sidebar.svg",
  "./assets/icons/signature.svg",
+ "./assets/icons/speaker.svg",
  "./assets/icons/spotlight.svg",
  "./assets/icons/textbox.svg",
+ "./assets/icons/trim.svg",
  "./assets/icons/two-page.svg",
  "./assets/icons/undo.svg",
  "./assets/icons/zoom-in.svg",
